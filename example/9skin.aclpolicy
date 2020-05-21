@@ -1,0 +1,31 @@
+# Project scope
+description: 9skin_user level ACL.
+context:
+  project: '.*'
+for:
+  resource:
+    - equals:
+        kind: event
+      allow: [read] # allow read of all activity (jobs run by all users)
+  job:
+    - allow: [run, read] # allow read of all jobs
+  adhoc:
+    - deny: run # don't allow adhoc execution
+  node:
+    - allow: [read, run] # allow run on nodes with the tag 'mytag'
+by:
+  group: 9skin_user
+
+---
+
+# Application scope
+description: 9skin_user level ACL.
+context:
+  application: 'rundeck'
+for:
+  project:
+    - match:
+        name: '.*'
+      allow: [read]
+by:
+  group: 9skin_user

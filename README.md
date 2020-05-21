@@ -180,4 +180,59 @@ su rundeck -s /bin/bash -c "ansible all -m ping"
 就可以看到Ansible裡的節點
 ![image](img/ansible_node.jpg)<br>
 
+## 在Rundeck中執行Ansible playbook
 
+若要在Rundeck中執行playbook，在產生Job時Workflow配置選擇Workflow Steps中的ansible插件
+
+- Ansible Module : 使用一個Ansible模組，目前嘗試還沒成功過(錯誤:ERROR! Specified hosts and/or --limit does not match any hosts)                        
+- Ansible Playbook Inline : 類似直接在Rundeck上撰寫playbook的方法
+- Ansible Playbook : 使用已經存在Playbook
+
+至於Node Steps 和 Workflow Steps的差異，<a href="https://docs.rundeck.com/docs/manual/job-workflows.html#workflow-steps">官方表示</a>
+```
+Node Steps operate once on each Node, which could be multiple times within a workflow. For a full list of Node Steps, see Job Plugins Node Steps
+Workflow Steps operate only once in the workflow. For a full list of Workflow Steps, see Workflow Steps
+```
+大概的意思是Node Steps有可能會工作多次，Workflow Steps只會執行一次，實測執行本機playbook兩個都能夠執行
+
+### Workflow Steps中Ansible Playbook的配置
+
+![image](img/workflow-cfg1.jpg)<br>
+![image](img/workflow-cfg2.jpg)<br>
+
+前面就填寫playbook的yml路徑在哪裡，ansible路徑如果沒變的話可以不填
+
+第二章圖的就很重要，如果沒有特別的只要跑哪個節點<font style="color:red;font-size:24pt">Disable Limit</font>一定要打勾。
+這指的是從Rundeck傳遞指令給ansible時不傳遞--limit參數，若不打勾會造成以下錯誤
+![image](img/error.jpg)<br>
+若要選擇指定節點的話在Extra Ansible arguments中輸入而外的指令，如下:
+```
+-i /etc/ansible/hosts --limit==all
+```
+以上配置完成就可以儲存。
+就可以在Rundeck上使用Ansible的Playbook了
+
+## 管理Rundeck中的使用者
+
+### 修改管理員密碼
+
+於/etc/rundeck/realm.properties修改，預設如下
+```
+admin:admin,user,admin,architect,deploy,build
+```
+使用名稱(帳號):密碼,後面都是擁有的權限，關於權限後面會再敘述
+
+若要將密碼加密可以使用md5
+```
+admin:MD5:E10ADC3949BA59ABBE56E057F20F883E,user,admin,architect,deploy,build
+```
+若要加入新的使用者直接在下方加入即可
+```
+new_user:MD5:E10ADC3949BA59ABBE56E057F20F883E,權限...
+```
+
+### 配置管理員權限
+可以於/etc/rundeck/admin.aclpolicy直接配置權限
+或是在GUI上也可以配置
+![image](img/access_control.png)<br>
+若要配置使用者基礎功能可以使用<a href="example/9skin.aclpolicy">此文件</a>(只能看到和使用，無法添加、刪除、修改任何內容)
