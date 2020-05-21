@@ -202,7 +202,7 @@ Workflow Steps operate only once in the workflow. For a full list of Workflow St
 
 前面就填寫playbook的yml路徑在哪裡，ansible路徑如果沒變的話可以不填
 
-第二章圖的就很重要，如果沒有特別的只要跑哪個節點<p style="color:red;font-size:24pt">Disable Limit</p>一定要打勾。
+第二章圖的就很重要，如果沒有特別的只要跑哪個節點<font color="red" size="36">Disable Limit</font>一定要打勾。
 這指的是從Rundeck傳遞指令給ansible時不傳遞--limit參數，若不打勾會造成以下錯誤
 ![image](img/error.jpg)<br>
 若要選擇指定節點的話在Extra Ansible arguments中輸入而外的指令，如下:
