@@ -49,7 +49,7 @@ Grails application running at http://localhost:4440 in environment: production
 
 修改/etc/rundeck/rundeck-config.properties
 ```
-grails.serverURL=http://122.147.213.60:4440
+grails.serverURL=http://www.your-ip.com:4440
 ```
 
 修改/etc/rundeck/framework.properties
@@ -57,8 +57,24 @@ grails.serverURL=http://122.147.213.60:4440
 framework.server.name = localhost
 framework.server.hostname = localhost
 framework.server.port = 4440
-framework.server.url = http://122.147.213.60:4440
+framework.server.url = http://www.your-ip.com:4440
 ```
+
+#### 若使用Nginx反向代理的話，需修改成以下
+
+修改/etc/rundeck/rundeck-config.properties
+```
+grails.serverURL=http://www.your-domain.com
+```
+
+修改/etc/rundeck/framework.properties
+```
+framework.server.name = http://www.your-domain.com
+framework.server.hostname = http://www.your-domain.com
+framework.server.port = 80
+framework.server.url = http://www.your-domain.com
+```
+這樣子接下來的API才能順利找到喔
 
 關閉SELinux
 ```
@@ -236,3 +252,4 @@ new_user:MD5:E10ADC3949BA59ABBE56E057F20F883E,權限...
 或是在GUI上也可以配置
 ![image](img/access_control.png)<br>
 若要配置使用者基礎功能可以使用<a href="example/9skin.aclpolicy">此文件</a>(只能看到和使用，無法添加、刪除、修改任何內容)
+
