@@ -253,3 +253,93 @@ new_user:MD5:E10ADC3949BA59ABBE56E057F20F883E,權限...
 ![image](img/access_control.png)<br>
 若要配置使用者基礎功能可以使用<a href="example/9skin.aclpolicy">此文件</a>(只能看到和使用，無法添加、刪除、修改任何內容)
 
+
+## 串接Rundeck API
+
+Rundeck提供了<a href="https://docs.rundeck.com/docs/api/rundeck-api.html#api-version-number"></a>
+
+### 認證方式
+
+認證的方式分為兩種
+- 密碼認證
+- token認證
+
+#### 密碼認證
+
+密碼認證方式其實就是傳送帳號密碼，認證後儲存Session 和 Cookie，使用Postman可以登入後在使用其他API，PHP則無法因為單存POST沒有轉換頁面並不會儲存Session和Cookie，用html的<form>則是直接登入rundeck
+
+方法: POST
+位置: $RUNDECK_SERVER_URL/j_security_check
+參數: 
+  - j_username  =>  使用者帳號
+  - j_password  =>  使用者密碼
+
+#### token認證
+
+token又分為動態和靜態
+動態的token是有時間限制的，目前版本最多30天，可以在登入後右上角 使用者設定->profile->User API Tokens裡新增；
+靜態的token可以在framework.properties中定義.properties文件的位置：
+```
+rundeck.tokens.file=/etc/rundeck/tokens.properties
+```
+該tokens.properties文件應包含您希望使用的靜態身份驗證令牌，並以關聯的用戶名作為密鑰：
+```
+username: token_string
+username2: token_string2
+...
+```
+得到token後
+HTTP標頭X-Rundeck-Auth-Token設置為token
+或
+HTTP URL參數authtoken設置為token
+
+```
+http://rundeck.9skin.com/api/14/projects?authtoken={YOUR_TOKEN}
+```
+
+#### Rundeck 資訊
+```
+GET  /api/14/system/info
+```
+
+#### 所有專案
+```
+GET  /api/14/projects
+```
+
+#### 專案下所有job及job ID
+```
+GET  /api/14/project/[PROJECT]/jobs
+```
+
+#### 執行job
+一樣需要在後面加上?authtoken={YOUR_TOKEN}
+```
+POST /api/1/job/[ID]/run
+POST /api/12/job/[ID]/executions
+```
+
+#### 列出正在執行的Job
+```
+GET /api/14/project/[PROJECT]/executions/running
+```
+
+#### 專案執行的歷史紀錄列表(activity)
+可以根據專案或是job來獲得紀錄
+```
+GET /api/14/project/[PROJECT]/executions
+GET /api/1/job/[ID]/executions
+```
+
+#### 單筆歷史紀錄的執行結果
+```
+GET /api/1/execution/[ID]
+```
+
+#### 執行輸出
+```
+GET /api/5/execution/[ID]/output
+GET /api/10/execution/[ID]/output/node/[NODE]
+GET /api/10/execution/[ID]/output/node/[NODE]/step/[STEPCTX]
+GET /api/10/execution/[ID]/output/step/[STEPCTX]
+```
